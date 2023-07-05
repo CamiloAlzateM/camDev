@@ -1,0 +1,503 @@
+<div class="card py-0 mb-3 pl-0" rol="ROLE_SOLICITUD_TRASPASO_PROPIEDAD_C">
+    <div
+        id="traspasoCollapse"
+        class="card-header header-acord-progress pointer pb-0"
+        data-toggle="collapse"
+        data-target="#collapseFive"
+        aria-expanded="false"
+        aria-controls="collapseFive"
+    >
+        <h6 class="mb-0 pt-2 font-weight-bold">
+            {{messages.tipoTramite.traspasoPropiedad}}
+        </h6>
+        <div class="d-flex align-items-center">
+            <div class="col-md-11 pl-0">
+                <div class="d-flex align-items-baseline">
+                    <div class="progress  w-100 mb-0 mt-2">
+                        <div
+                            class="progress-bar"
+                            id="progressBarTraspaso"
+                            role="progressbar"
+                            style="width: 100%"
+                            aria-valuenow="{{ctrlTraspaso.progresoTramite}}"
+                            aria-valuemin="0"
+                            aria-valuemax="100"
+                        ></div>
+                    </div>
+                    <span class="p-1">{{ctrlTraspaso.progresoTramite}}%</span>
+                </div>
+            </div>
+            <div class="col-md-1" ng-show="ctrlTraspaso.showBtnEliminarTramite">
+                <a ng-click="ctrlTraspaso.eliminarTramiteTraspaso()">
+                    <i class="fa fa-trash fs-17 text-muted" aria-hidden="true"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div
+        id="collapseFive"
+        class="collapse"
+        aria-labelledby="headingFive"
+        data-parent="#accordion"
+    >
+        <div class="card-body">
+            <p>
+                {{ctrlTraspaso.propietario}} {{messages.tramitesServicios.traspasoPropiedad.tieneEl}}
+                <span class="font-weight-bold text-primary">{{ctrlTraspaso.porcentajePropiedadActual}}% {{messages.tramitesServicios.traspasoPropiedad.deLaPropiedad}}</span>
+            </p>
+            <hr class="w-100">
+            <div ng-show="ctrlTraspaso.hayPoseedoresPrendarios">
+                <p class="text-center mt-3 mb-2">
+                    {{messages.tramitesServicios.traspasoPropiedad.limitacionesFavorDe}}
+                    <em
+                        class="popover-dismiss text-primary icon qx-icon-question-circle"
+                        role="button"
+                        data-toggle="popover"
+                        data-trigger="hover"
+                        title="Descripción:"
+                        data-content="{{messages.tramitesServicios.inscripcionPrenda.descripcion}}"
+                    ></em>
+                </p>
+                <p class="text-center mb-2" ng-repeat="poseedorPrendario in ctrlTraspaso.arrPoseedoresPrendarios">
+                    {{poseedorPrendario.nombres}} {{poseedorPrendario.apellidos}} - {{messages.common.grado}}
+                    {{poseedorPrendario.grado}}
+                </p>
+            </div>
+            <div ng-show="ctrlTraspaso.hayPoseedoresPrendarios" rol="ROLE_OPCIONES_PRENDA_TRASPASO_M" class="row justify-content-md-center mb-3">
+                <div class="col-md-12 text-center disableInconsistencias">
+                    <p>{{messages.tramitesServicios.traspasoPropiedad.opcionesContinuarTramite}}</p>
+                    <div class="row">
+                        <div class="col-12 col-xl-3">
+                            <div class="radio-input">
+                                <label>
+                                    <input
+                                        type="radio"
+                                        name="radio1"
+                                        value="1"
+                                        ng-click="ctrlTraspaso.levantarPrenda()"
+                                        ng-checked="ctrlTraspaso.checkLevantar"
+                                    >
+                                    <span></span>
+                                    {{messages.tramitesServicios.traspasoPropiedad.levantarPrenda}}
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-5">
+                            <div class="radio-input">
+                                <label>
+                                    <input
+                                        type="radio"
+                                        name="radio1"
+                                        value="2"
+                                        ng-click="ctrlTraspaso.levantarEInscribir()"
+                                        ng-checked="ctrlTraspaso.checkLevantarEInscribir"
+                                    >
+                                    <span></span>
+                                    {{messages.tramitesServicios.traspasoPropiedad.levantarEInscribirPrenda}}
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-4">
+                            <div class="radio-input">
+                                <label>
+                                    <input
+                                        type="radio"
+                                        name="radio1"
+                                        value="3"
+                                        ng-click="ctrlTraspaso.continuarLimitacionPrenda()"
+                                        ng-checked="ctrlTraspaso.checkContinuarLimitacion"
+                                    >
+                                    <span></span>
+                                    {{messages.tramitesServicios.traspasoPropiedad.continuarLimitacionPrenda}}
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <form id="formValorCompraventa">
+                <div class="row">
+                    <div class="col-12 col-md-6 col-xl-5">
+                        <div class="form-group">
+                            <label class="fs-13">
+                                {{messages.tramitesServicios.traspasoPropiedad.seleccioneTipoTraspaso}}
+                            </label>
+                            <select
+                                class="form-control"
+                                ng-model="ctrlTraspaso.traspasoSeleccionado"
+                                ng-options="t.nombre for t in ctrlTraspaso.arrTiposTraspasos track by t.idTipoTramite"
+                                ng-change="ctrlTraspaso.validarTraspasoPendiente({{ctrlTraspaso.traspasoSeleccionado}})"
+                                ng-disabled="ctrlTraspaso.disableInconsistencias"
+                            ></select>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 col-xl-5">
+                        <div class="form-group">
+                            <label class="fs-13">
+                                {{messages.tramitesServicios.traspasoPropiedad.valorCompraventa}}
+                                <em
+                                    class="popover-dismiss text-primary icon qx-icon-question-circle"
+                                    role="button"
+                                    data-toggle="popover"
+                                    data-trigger="hover"
+                                    title="Valor de la compraventa"
+                                    data-content="{{messages.tramitesServicios.traspasoPropiedad.msgValorCompraventa}}"
+                                ></em>
+                                <span ng-if="formValorCompraventa.valorCompraventa" class="fs-9">({{formValorCompraventa.valorCompraventa | moneda}})</span>
+                            </label>
+                            <input
+                                type="number"
+                                class="form-control"
+                                placeholder="$"
+                                id="valorCompraventa"
+                                maxlength="9"
+                                pattern="^[0-9]+$"
+                                name="valorCompraventa"
+                                ng-model="formValorCompraventa.valorCompraventa"
+                                ng-blur="ctrlTraspaso.calcularRetefuente()"
+                                ng-disabled="ctrlTraspaso.bloquearValorCompraventa || ctrlTraspaso.disableInconsistencias "
+                                required
+                            >
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <p class="font-weight-bold text-primary mb-2">
+                {{messages.tramitesServicios.traspasoPropiedad.informacionComprador}}
+                <span
+                    id="eliminarTramite"
+                    name="eliminarTramite"
+                    class="align-middle btn btn-primary"
+                    ng-click="ctrlTraspaso.eliminarTramiteTraspaso()"
+                    ng-show="ctrlTraspaso.showBtnEliminarTramite"
+                >X</span>
+            </p>
+            <form id="formComprador">
+                <div class="row">
+                    <div class="col-12 col-md-6 col-xl-4">
+                        <div class="form-group">
+                            <label class="fs-13" for="tipoDocumento">{{messages.common.tipoNumeroDocumento}}</label>
+                            <div class="input-group numDoc">
+                                <div class="input-group-prepend select-group">
+                                    <select
+                                        class="form-control w-100 "
+                                        id="tipoDocumento"
+                                        name="tipoDocumento"
+                                        ng-model="formTraspaso.checkDocumento"
+                                        ng-options="d.abreviaturaDocumento for d in ctrlTraspaso.listDocumentosComprador track by d.idDocumento"
+                                        ng-change="ctrlTraspaso.changeTipoDocumento(true)"
+                                        ng-disabled="ctrlTraspaso.bloquearTipoDocumento || ctrlTraspaso.disableInconsistencias"
+                                    ></select>
+                                </div>
+                                <input
+                                    type="text"
+                                    class="form-control w-100"
+                                    id="numeroDocumento"
+                                    name="numeroDocumento"
+                                    autocomplete="off"
+                                    maxlength="15"
+                                    ng-model="formTraspaso.numeroDocumento"
+                                    ng-blur="ctrlTraspaso.validarPersona()"
+                                    ng-change="ctrlTraspaso.changeDocumento()"
+                                    ng-disabled="ctrlTraspaso.bloquearNumeroDocumento || ctrlTraspaso.disableInconsistencias"
+                                >
+                                <button
+                                    type="button"
+                                    id="eliminarPersona"
+                                    name="eliminarPersona"
+                                    class="align-middle btn btn-primary"
+                                    ng-click="ctrlTraspaso.eliminarPersona()"
+                                    ng-show="ctrlTraspaso.showBtnEliminarPersona"
+                                >X</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 col-xl-4" ng-show="formTraspaso.realizarAutenticacionRunt">
+                        <div class="form-group">
+                            <label class="fs-13">{{messages.common.fechaExpedicion}}</label>
+                            <input
+                                type="text"
+                                id="fechaExpedicion"
+                                name="fechaExpedicion"
+                                view="years"
+                                start-date="2001"
+                                data-date-format="dd/mm/yyyy"
+                                maxlength="10"
+                                class="form-control text-number datepicker-here"
+                                calendar
+                                ng-model="formTraspaso.fechaExpedicion"
+                            >
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 col-xl-4" ng-show="formTraspaso.realizarAutenticacionRunt">
+                        <div class="form-group">
+                            <label class="fs-13">{{messages.common.ciudadExpedicion}}</label>
+                            <select
+                                class="form-control"
+                                id="ciudadExpedicion"
+                                name="ciudadExpedicion"
+                                required
+                                ng-model="formTraspaso.ciudadExpedicion"
+                                ng-options="ciudad.nombreCiudad for ciudad in ctrlTraspaso.ciudades track by ciudad.idCiudad"
+                            ></select>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 col-xl-4">
+                        <div class="form-group">
+                            <label for="nombreComprador">
+                                {{ctrlTraspaso.compradorEmpresa ? messages.common.nombreEmpresa : messages.common.nombres}}
+                            </label>
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="nombreComprador"
+                                name="nombreComprador"
+                                ng-model="formTraspaso.nombreComprador"
+                                ng-disabled="ctrlTraspaso.bloquearNombreComprador || ctrlTraspaso.disableInconsistencias"
+                                maxlength="20"
+                            >
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 col-xl-4" ng-hide="ctrlTraspaso.compradorEmpresa">
+                        <div class="form-group">
+                            <label class="fs-13" for="apellidoComprador">
+                                {{messages.common.apellidos}}
+                            </label>
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="apellidoComprador"
+                                name="apellidoComprador"
+                                ng-model="formTraspaso.apellidoComprador"
+                                ng-disabled="ctrlTraspaso.bloquearApellidoComprador || ctrlTraspaso.disableInconsistencias"
+                                maxlength="20"
+                            >
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 col-xl-4" ng-show="formTraspaso.realizarAutenticacionRunt">
+                        <div class="form-group">
+                            <label class="fs-13">{{messages.common.celular}}</label>
+                            <input
+                                type="number"
+                                class="form-control"
+                                id="celular"
+                                name="celular"
+                                ng-model="formTraspaso.celular"
+                                maxlength="10"
+                            >
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 col-xl-4" ng-show="formTraspaso.realizarAutenticacionRunt">
+                        <div class="form-group">
+                            <label class="fs-13">{{messages.common.sexo}}</label>
+                            <select
+                                class="form-control"
+                                ng-model="formTraspaso.sexo"
+                                id="sexo"
+                                name="sexo"
+                                required
+                            >
+                                <option value="">{{messages.common.seleccionar}}</option>
+                                <option value="M">{{messages.common.masculino}}</option>
+                                <option value="F">{{messages.common.femenino}}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 col-xl-4" ng-show="formTraspaso.realizarAutenticacionRunt">
+                        <div class="form-group">
+                            <label class="fs-13">{{messages.common.correoElectronico}}</label>
+                            <input
+                                type="email"
+                                class="form-control"
+                                id="correo"
+                                name="correo"
+                                ng-model="formTraspaso.correo"
+                                maxlength="100"
+                            >
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 col-xl-4" ng-show="formTraspaso.realizarAutenticacionRunt">
+                        <div class="form-group">
+                            <label class="fs-13">{{messages.common.confirmarCorreo}}</label>
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="confirmarCorreo"
+                                name="confirmarCorreo"
+                                ng-model="formTraspaso.confirmarCorreo"
+                                maxlength="100"
+                            >
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 col-xl-4">
+                        <div class="form-group">
+                            <label class="fs-13" for="porcentaje">
+                                {{messages.tramitesServicios.traspasoPropiedad.porcentajeDeseaVender}}
+                            </label>
+                            <input
+                                type="text"
+                                class="form-control"
+                                placeholder="%"
+                                id="porcentaje"
+                                name="porcentaje"
+                                maxlength="3"
+                                ng-model="formTraspaso.porcentaje"
+                                ng-disabled="ctrlTraspaso.bloquearPorcentaje || ctrlTraspaso.disableInconsistencias"
+                            >
+                        </div>
+                    </div>
+                </div>
+                <div class="row justify-content-end mb-md-4 mt-3 mt-md-0">
+                    <div class="col-12 col-md-auto">
+                        <button type="button" 
+                            class="btn btn-outline-primary btn-block" 
+                            id="agregarComprador" name="agregarComprador" 
+                            ng-disabled="ctrlTraspaso.bloquearAgregarComprador || ctrlTraspaso.disableInconsistencias" 
+                            ng-click="ctrlTraspaso.agregarCompradorClick()"> 
+                            {{messages.tramitesServicios.traspasoPropiedad.agregarComprador}}
+                        </button>
+                        <!-- <button
+                            type="button"
+                            class="btn btn-outline-primary btn-block"
+                            data-toggle="modal"
+                            data-target="#modalConfirmacionTraspasoMultiple"
+                        > {{messages.tramitesServicios.traspasoPropiedad.agregarComprador}}</button> -->
+                    </div>
+                </div>
+            </form>
+            <table class="table" ng-show="ctrlTraspaso.arrCompradores.length > 0">
+                <thead>
+                    <tr>
+                        <th>
+                            {{messages.common.nombresYApellidos}}
+                        </th>
+                        <th>
+                            {{messages.common.identificacion}}
+                        </th>
+                        <th>
+                            {{messages.common.apoderadoInterrogacion}}
+                        </th>
+                        <th>
+                            {{messages.common.porcentaje}}
+                        </th>
+                        <th class="text-lg-center">
+                            {{messages.tipoTramite.cambioAcreedorPrendario.tituloEliminar}}
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="comprador in ctrlTraspaso.arrCompradores">
+                        <td>
+                            <span class="label-small-table">{{messages.common.nombresYApellidos}}</span>
+                            {{comprador.nombreCompleto}}
+                        </td>
+                        <td>
+                            <span class="label-small-table">{{messages.common.identificacion}}</span>
+                            {{comprador.tipoDocumento}} {{comprador.numeroDocumento}}
+                        </td>
+                        <td>
+                            <span class="label-small-table">{{messages.common.apoderadoInterrogacion}}</span>
+                            {{comprador.registraApoderado}}
+                        </td>
+                        <td>
+                            <span class="label-small-table">{{messages.common.porcentaje}}</span>
+                            {{comprador.porcentajeCompra}}%
+                        </td>
+                        <td class="text-lg-center">
+                            <span class="label-small-table">{{messages.tipoTramite.cambioAcreedorPrendario.tituloEliminar}}</span>
+                            <em class="icon qx-icon-trash text-primary fs-16 pointer" ng-click="ctrlTraspaso.eliminarComprador($index, comprador.idPersonaComprador)"></em>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div
+    class="modal fade"
+    id="modalConfirmacionDesblindaje"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="exampleModalLabel"
+    aria-hidden="true"
+>
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">
+                    {{messages.tramitesServicios.traspasoPropiedad.solicitarDesblindaje}}
+                </h5>
+                <button
+                    type="button"
+                    class="close"
+                    data-dismiss="modal"
+                    aria-label="Close"
+                >
+                    <span class="fs-x-3" aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                {{messages.tramitesServicios.traspasoPropiedad.msgConfirmarDesblindaje}}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-outline-primary" ng-click="ctrlTraspaso.noSolicitarDesblindaje()">{{messages.common.no}}</button>
+                <button type="button" class="btn btn-sm btn-outline-danger" ng-click="ctrlTraspaso.solicitarDesblindaje()">{{messages.common.si}}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div
+    class="modal fade pr-0"
+    id="modalConfirmacionTraspasoMultiple"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="exampleModalLabel"
+    aria-hidden="true"
+>
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">
+                    {{messages.tramitesServicios.label}}
+                </h5>
+                <button
+                    type="button"
+                    class="close"
+                    data-dismiss="modal"
+                    aria-label="Close"
+                >
+                    <span class="fs-x-3" aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-0">{{messages.tramitesServicios.confirmacionTraspaso}}</p>
+            </div>
+            <div class="col-md-12 mb-3">
+                <div class="row justify-content-end">
+                    <div class="col-12 col-md-auto mb-3 mb-md-0">
+                        <button type="button" 
+                            class="btn btn-outline-primary btn-block"
+                            ng-click="ctrlTraspaso.noPermitirAgregarComprador()">{{messages.common.no}}</button>
+                    </div>
+                    <div class="col-12 col-md-auto">
+                        <button
+                            type="button"
+                            class="btn btn-primary btn-block"
+                            ng-click="ctrlTraspaso.confirmarVenderMayorPorcentaje()"
+                        >{{messages.common.si}}</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(function () {
+        var year = (new Date).getFullYear();
+        $("#fechaExpedicion").datepicker({
+            minDate: new Date(year, 0, 1),
+            maxDate: new Date(year, 11, 31)
+        });
+    });
+</script>
